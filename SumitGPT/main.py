@@ -2,10 +2,16 @@ from pdfManipulation import write_text_to_pdf, verifyValueLength, extractFromInp
 from openAi import openAiCallSummary
 
 
+def SummarizeTexts(text):
+    for section, value in text.items():
+        if not text[section]:
+            continue
+        text[section] = openAiCallSummary(value)
+    return text
+
+
 def summaryGPT(filename):
-    # Define the input text
-    text = verifyValueLength(makeSingkeValuePerKey(extractFromInput(filename)))
-    print('hola')
+    text = SummarizeTexts(verifyValueLength(makeSingkeValuePerKey(extractFromInput(filename))))
     write_text_to_pdf(openAiCallSummary(text))
 
 

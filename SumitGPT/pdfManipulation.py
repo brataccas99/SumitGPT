@@ -1,6 +1,21 @@
 import PyPDF2
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
+from openAi import convertToUTF
+import chardet
+
+
+def convertLetter(c):
+    return convertToUTF(c)
+
+
+def detectEncoding(s):
+    if ord(s) > 127:
+        byte_str = s.encode()
+        result = chardet.detect(byte_str)
+        if result['encoding'] != 'ascii':
+            return True
+    return False
 
 
 def reduceString(text):
@@ -14,32 +29,52 @@ def reduceString(text):
     return substrings
 
 
-def write_text_to_pdf(diz):
+def prepareA4Format():
     c = canvas.Canvas('output.pdf', pagesize=(210 * mm, 297 * mm))
     page_width = c.pagesize[0] - 100
     line_height = 20
     current_x = 50
     page_num = 0
+    return c, page_width, line_height, current_x, page_num
+
+
+def writeHeader(c, header):
     c.setFont("Helvetica", 18)
+    c.drawString(50, 780, header)
+
+
+def prepareText(c, text):
+    c.setFont("Helvetica", 14)
+    if text.__contains__('\n\n'):
+        text = text.replace('\n\n', '')
+    if text.__contains__('Codificato in formato UTF-8:'):
+        text = text.replace('Codificato in formato UTF-8:', '')
+    return text
+
+
+def write_text_to_pdf(diz):
+    c, page_width, line_height, current_x, page_num = prepareA4Format()
     for header, text in diz.items():
-        c.drawString(50, 780, header)
+        writeHeader(c, header)
         current_y = 700
-        c.setFont("Helvetica", 14)
-        if text.__contains__('\n\n'):
-            text = text.replace('\n\n', '')
-        if text.__contains__('Codificato in formato UTF-8:'):
-            text = text.replace('Codificato in formato UTF-8:', '')
+        text = prepareText(c, text)
         for word in text:
             substrings = reduceString(word)
             for sub in substrings:
-                for char in sub:
-                    char_width = c.stringWidth(char)
-                    if current_x + char_width >= page_width:
-                        current_x = 50
-                        current_y -= line_height
-                    c.drawString(current_x, current_y, char)
-                    current_x += char_width
-        if text == '':
+                if detectEncoding(sub):
+                    sub = convertToUTF(sub)
+                char_width = c.stringWidth(sub)
+                if current_x + char_width >= page_width:
+                    current_x = 50
+                    current_y -= line_height
+                c.drawString(current_x, current_y, sub)
+                current_x += char_width
+                if current_y < 50:
+                    c.showPage()
+                    page_num += 1
+                    current_x = 50
+                    current_y = 700
+        if not text:
             continue
         c.showPage()
         current_x = 50
