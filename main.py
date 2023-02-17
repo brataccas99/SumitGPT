@@ -5,16 +5,14 @@ from reportlab.pdfgen import canvas
 
 
 def reduceString(text):
-    words = text.split()
     substrings = []
-    for word in words:
+    for word in text:
         word_substrings = [word[i:i + 85] for i in range(0, len(word), 85)]
         substrings.extend(word_substrings)
         substrings.append(' ')
     if substrings:  # Check if substrings is not empty before removing last item
         substrings.pop()  # Remove the last space character
     return substrings
-
 
 
 def write_text_to_pdf(diz, filename):
@@ -28,6 +26,8 @@ def write_text_to_pdf(diz, filename):
         c.drawString(50, 780, header)
         current_y = 700
         c.setFont("Helvetica", 14)
+        if text.__contains__('\n\n'):
+            text = text.replace('\n\n', '')
         for word in text:
             substrings = reduceString(word)
             for sub in substrings:
@@ -109,7 +109,6 @@ def summaryGPT(filename):
         completions = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=len(value[0]), n=1,
                                                stop=None, temperature=0.5)
         text[section] = completions.choices[0].text
-        break
     write_text_to_pdf(text, "output.pdf")
 
 
