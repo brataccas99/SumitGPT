@@ -15,8 +15,8 @@ def reduceString(text):
     return substrings
 
 
-def write_text_to_pdf(diz, filename):
-    c = canvas.Canvas(filename, pagesize=(210 * mm, 297 * mm))
+def write_text_to_pdf(diz):
+    c = canvas.Canvas('output.pdf', pagesize=(210 * mm, 297 * mm))
     page_width = c.pagesize[0] - 100
     line_height = 20
     current_x = 50
@@ -28,6 +28,8 @@ def write_text_to_pdf(diz, filename):
         c.setFont("Helvetica", 14)
         if text.__contains__('\n\n'):
             text = text.replace('\n\n', '')
+        if text.__contains__('Codificato in formato UTF-8:'):
+            text = text.replace('Codificato in formato UTF-8:', '')
         for word in text:
             substrings = reduceString(word)
             for sub in substrings:
@@ -38,6 +40,8 @@ def write_text_to_pdf(diz, filename):
                         current_y -= line_height
                     c.drawString(current_x, current_y, char)
                     current_x += char_width
+        if text == '':
+            continue
         c.showPage()
         current_x = 50
         page_num += 1
@@ -106,11 +110,10 @@ def summaryGPT(filename):
     for section, value in text.items():
         if not text[section]:
             continue
-        prompt = f"riassumi il seguente testo in meno di {len(value[0])} parole e codificalo in formato utf-8, il testo è il seguente: \n {value[0]}"
-        completions = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=len(value[0]), n=1,
-                                               stop=None, temperature=0.5)
+        prompt = f"riassumi il seguente testo in meno di {len(value[0])} parole in utf-8, il testo è il seguente: \n {value[0]}"
+        completions = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=len(value[0]), n=1, stop=None, temperature=0.5)
         text[section] = completions.choices[0].text
-    write_text_to_pdf(text, "output.pdf")
+    write_text_to_pdf(text)
 
 
 def main():
