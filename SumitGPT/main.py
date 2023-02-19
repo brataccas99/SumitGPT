@@ -1,4 +1,5 @@
-from pdfManipulation import write_text_to_pdf, verifyValueLength, extractFromInput, makeSingkeValuePerKey
+from pdfManipulation import write_text_to_pdf, extractFromInput
+from Utilities import verifyValueLength, makeSingkeValuePerKey, convertLatinToUTF8
 from openAi import openAiCallSummary
 
 
@@ -11,8 +12,7 @@ def SummarizeTexts(text):
 
 
 def summaryGPT(filename):
-    text = SummarizeTexts(verifyValueLength(makeSingkeValuePerKey(extractFromInput(filename))))
-    write_text_to_pdf(openAiCallSummary(text))
+    write_text_to_pdf(SummarizeTexts(verifyValueLength(makeSingkeValuePerKey(extractFromInput(filename)))))
 
 
 def main():

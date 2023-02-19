@@ -13,16 +13,3 @@ def openAiCallSummary(value):
     completions = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=len(value[0]), n=1, stop=None,
                                            temperature=0.5)
     return completions.choices[0].text
-
-
-@count_calls
-def convertToUTF(letter):
-    # Set your API key
-    openai.api_key = "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"
-    # Use the GPT-3 API to generate a summary
-    model_engine = "text-babbage-001"
-    prompt = f"converti {letter} in una codifica ascii adatta alle stringhe senza alterarne il contenuto"
-    completions = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=len(letter), n=1,
-                                           stop=None, temperature=0.5)
-    utf8_letter = completions.choices[0].text
-    return utf8_letter
