@@ -42,22 +42,25 @@ def extractFromInput(filename):
     return getSections(page_text)
 
 
-def prepareA4Format():
+def initializeA4Format():
     c = canvas.Canvas('output.pdf', pagesize=(210 * mm, 297 * mm))
     page_width = c.pagesize[0] - 100
     line_height = 20
     current_x = 50
     page_num = 0
-    return c, page_width, line_height, current_x, page_num
+    current_y = 780
+    return c, page_width, line_height, current_x, page_num, current_y
 
 
-def writeHeader(c, header):
-    c.setFont("Helvetica", 18)
-    c.drawString(50, 780, header)
+def writeHeader(c, header, current_y):
+    c.setFont("Times-Roman", 18)
+    c.drawString(50, current_y, header)
+    current_y -= 50
+    return current_y
 
 
 def prepareText(c, text):
-    c.setFont("Helvetica", 14)
+    c.setFont("Times-Roman", 14)
     if text.__contains__('\n\n'):
         text = text.replace('\n\n', '')
     if text.__contains__('Codificato in formato UTF-8:'):
@@ -68,10 +71,10 @@ def prepareText(c, text):
 
 
 def write_text_to_pdf(diz):
-    c, page_width, line_height, current_x, page_num = prepareA4Format()
+    c, page_width, line_height, current_x, page_num, current_y = initializeA4Format()
     for header, text in diz.items():
-        writeHeader(c, header)
-        current_y = 700
+        current_x = 50
+        current_y = writeHeader(c, header, current_y)
         text = prepareText(c, text)
         if not text:
             continue
@@ -84,12 +87,11 @@ def write_text_to_pdf(diz):
             if current_x + char_width >= page_width:
                 current_x = 50
                 current_y -= line_height
-            if current_y <= 100:
+            if current_y <= 50:
                 c.showPage()
                 page_num += 1
                 current_x = 50
                 current_y = 700
-        break
-
+        current_y -= 80
     c.save()
     print('finito')

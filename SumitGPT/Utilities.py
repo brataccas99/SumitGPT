@@ -40,7 +40,8 @@ def multipleLetterConversion(letter):
 
 
 def convertLatinToUTF8(letter):
-    if len(letter) == 1:
+    print(letter)
+    if not unicodedata.combining(letter):
         return singleLetterConversion(letter)
     else:
         return multipleLetterConversion(letter)
