@@ -62,23 +62,9 @@ def prepareText(c, text):
         text = text.replace('\n\n', '')
     if text.__contains__('Codificato in formato UTF-8:'):
         text = text.replace('Codificato in formato UTF-8:', '')
+    if len(text) > 4000:
+        text = Utilities.reduceString(text)
     return text
-
-
-def checkForNewLine(current_x, current_y, char_width, page_width, line_height):
-    if current_x + char_width >= page_width:
-        current_x = 50
-        current_y -= line_height
-    return current_x, current_y
-
-
-def checkForNewPage(current_y, current_x, c, page_num):
-    if current_y < 50:
-        c.showPage()
-        page_num += 1
-        current_x = 50
-        current_y = 700
-    return current_y, current_x, c, page_num
 
 
 def write_text_to_pdf(diz):
@@ -87,21 +73,23 @@ def write_text_to_pdf(diz):
         writeHeader(c, header)
         current_y = 700
         text = prepareText(c, text)
-        # for word in text:
-        # substrings = reduceString(word)
-        for sub in text:
-            if sub != '\n' and Utilities.detectEncoding(sub):
-                print(sub)
-                # sub = convertToUTF(sub)
-                sub = Utilities.convertLatinToUTF8(sub)
-                print(sub)
-            char_width = c.stringWidth(sub)
-            current_x, current_y = checkForNewLine(current_x, current_y, char_width, page_width, line_height)
-            c.drawString(current_x, current_y, sub)
-            current_x += char_width
-            current_y, current_x, c, page_num = checkForNewPage(current_y, current_x, c, page_num)
         if not text:
             continue
+        for sub in text:
+            if sub != '\n' and Utilities.detectEncoding(sub):
+                sub = Utilities.convertLatinToUTF8(sub)
+            char_width = c.stringWidth(sub)
+            c.drawString(current_x, current_y, sub)
+            current_x += char_width
+            if current_x + char_width >= page_width:
+                current_x = 50
+                current_y -= line_height
+            if current_y <= 100:
+                c.showPage()
+                page_num += 1
+                current_x = 50
+                current_y = 700
+        break
 
     c.save()
     print('finito')

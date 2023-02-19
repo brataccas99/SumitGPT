@@ -17,15 +17,33 @@ def count_calls(func):
     return wrapper
 
 
+def singleLetterConversion(letter):
+    if unicodedata.category(letter) == "Cc":
+        # Get the Unicode code point of the letter
+        code_point = ord(letter)
+        # Get the UTF-8 byte representation of the code point
+        utf8_bytes = code_point.to_bytes(4, byteorder='big')
+        # Decode the byte string as UTF-8 to get the converted string
+        return utf8_bytes.decode('utf-8')
+    return letter
+
+
+def multipleLetterConversion(letter):
+    for char in letter:
+        # Check if the character is composed or not
+        if unicodedata.combining(char) == 0:
+            # Normalize the letter using NFKD decomposition
+            normalized = unicodedata.normalize('NFKD', letter)
+            # Replace combining diacritical mark with empty string
+            return normalized.replace('\u0302', '')
+    return letter
+
+
 def convertLatinToUTF8(letter):
-    # Normalize the letter using NFKD decomposition
-    normalized = unicodedata.normalize('NFKD', letter)
-
-    # Replace combining diacritical mark with empty string
-    converted = normalized.replace('\u0302', '')
-
-    # Return the converted string
-    return converted
+    if len(letter) == 1:
+        return singleLetterConversion(letter)
+    else:
+        return multipleLetterConversion(letter)
 
 
 def makeSingkeValuePerKey(diz):
