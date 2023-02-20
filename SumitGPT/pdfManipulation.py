@@ -34,7 +34,7 @@ def getSections(text):
 
 def extractFromInput(filename):
     page_text = ''
-    filepath = "C:/Users/roach/Desktop/Storia_contemporanea.pdf"
+    filepath = filename
     with open(filepath, "rb") as file:
         pdf_reader = PyPDF2.PdfReader(file)
         for page in range(len(pdf_reader.pages)):

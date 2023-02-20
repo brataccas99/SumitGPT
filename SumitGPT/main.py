@@ -11,12 +11,12 @@ def SummarizeTexts(text):
     return text
 
 
-def summaryGPT(filename):
-    write_text_to_pdf(SummarizeTexts(verifyValueLength(makeSingkeValuePerKey(extractFromInput(filename)))))
+def summaryGPT(filepath):
+    write_text_to_pdf(SummarizeTexts(verifyValueLength(makeSingkeValuePerKey(extractFromInput(filepath)))))
 
 
 def main():
-    summaryGPT("Storia_contemporanea_Dalla_Grande_Guerra_a_oggi_Nuova_ediz_Giovanni")
+    summaryGPT("C:/Users/roach/Desktop/Storia_contemporanea.pdf")
 
 
 if __name__ == '__main__':
