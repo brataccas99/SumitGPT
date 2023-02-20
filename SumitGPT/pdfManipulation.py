@@ -34,7 +34,7 @@ def getSections(text):
 
 def extractFromInput(filename):
     page_text = ''
-    filepath = "C:/Users/roach/PycharmProject/SumitGPT/SumitGPT/input.pdf"
+    filepath = "C:/Users/roach/Desktop/Storia_contemporanea.pdf"
     with open(filepath, "rb") as file:
         pdf_reader = PyPDF2.PdfReader(file)
         for page in range(len(pdf_reader.pages)):
@@ -70,28 +70,65 @@ def prepareText(c, text):
     return text
 
 
-def write_text_to_pdf(diz):
-    c, page_width, line_height, current_x, page_num, current_y = initializeA4Format()
-    for header, text in diz.items():
+def write_char_to_canvas(c, char, page_width, line_height, current_x, current_y, page_num):
+    if char != '\n' and Utilities.detectEncoding(char):
+        char = Utilities.convertLatinToUTF8(char)
+    char_width = c.stringWidth(char)
+    c.drawString(current_x, current_y, char)
+    current_x += char_width
+    if current_x + char_width >= page_width:
         current_x = 50
-        current_y = writeHeader(c, header, current_y)
-        text = prepareText(c, text)
+        current_y -= line_height
+    if current_y <= 50:
+        c.showPage()
+        page_num += 1
+        current_x = 50
+        current_y = 700
+    return current_x, current_y, page_num
+
+
+def initialize_canvas():
+    return initializeA4Format()
+
+
+def write_header_to_canvas(c, header, current_y):
+    return writeHeader(c, header, current_y)
+
+
+def prepare_text(c, text):
+    return prepareText(c, text)
+
+
+def write_sub_to_canvas(c, sub, page_width, line_height, current_x, current_y, page_num):
+    if len(sub) != 1:
+        for char in sub:
+            current_x, current_y, page_num = write_char_to_canvas(c, char, page_width, line_height, current_x,
+                                                                  current_y, page_num)
+        current_y -= 80
+    else:
+        current_x, current_y, page_num = write_char_to_canvas(c, sub, page_width, line_height, current_x, current_y,
+                                                              page_num)
+        current_y -= 80
+    return current_x, current_y, page_num
+
+
+def write_text_to_canvas(c, diz, page_width, line_height):
+    current_x = 50
+    page_num = 1
+    current_y = 700
+    for header, text in diz.items():
+        current_y = write_header_to_canvas(c, header, current_y)
+        text = prepare_text(c, text)
         if not text:
             continue
         for sub in text:
-            if sub != '\n' and Utilities.detectEncoding(sub):
-                sub = Utilities.convertLatinToUTF8(sub)
-            char_width = c.stringWidth(sub)
-            c.drawString(current_x, current_y, sub)
-            current_x += char_width
-            if current_x + char_width >= page_width:
-                current_x = 50
-                current_y -= line_height
-            if current_y <= 50:
-                c.showPage()
-                page_num += 1
-                current_x = 50
-                current_y = 700
-        current_y -= 80
+            current_x, current_y, page_num = write_sub_to_canvas(c, sub, page_width, line_height, current_x, current_y,
+                                                                 page_num)
     c.save()
+
+
+def write_text_to_pdf(diz):
+    c, page_width, line_height, current_x, page_num, current_y = initialize_canvas()
+    write_text_to_canvas(c, diz, page_width, line_height)
+
     print('finito')
