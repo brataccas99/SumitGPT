@@ -54,7 +54,7 @@ def makeSingkeValuePerKey(diz):
 def verifyValueLength(dictionary):
     result = {}
     for k, v in dictionary.items():
-        result[k] = [v[i:i + 4097] for i in range(0, len(v), 4097)]
+        result[k] = [v[i:i + 4000] for i in range(0, len(v), 4000)]
     return result
 
 
