@@ -87,18 +87,6 @@ def write_char_to_canvas(c, char, page_width, line_height, current_x, current_y,
     return current_x, current_y, page_num
 
 
-def initialize_canvas():
-    return initializeA4Format()
-
-
-def write_header_to_canvas(c, header, current_y):
-    return writeHeader(c, header, current_y)
-
-
-def prepare_text(c, text):
-    return prepareText(c, text)
-
-
 def write_sub_to_canvas(c, sub, page_width, line_height, current_x, current_y, page_num):
     if len(sub) != 1:
         for char in sub:
@@ -117,8 +105,8 @@ def write_text_to_canvas(c, diz, page_width, line_height):
     page_num = 1
     current_y = 700
     for header, text in diz.items():
-        current_y = write_header_to_canvas(c, header, current_y)
-        text = prepare_text(c, text)
+        current_y = writeHeader(c, header, current_y)
+        text = prepareText(c, text)
         if not text:
             continue
         for sub in text:
@@ -128,7 +116,7 @@ def write_text_to_canvas(c, diz, page_width, line_height):
 
 
 def write_text_to_pdf(diz):
-    c, page_width, line_height, current_x, page_num, current_y = initialize_canvas()
+    c, page_width, line_height, current_x, page_num, current_y = initializeA4Format()
     write_text_to_canvas(c, diz, page_width, line_height)
 
     print('finito')
