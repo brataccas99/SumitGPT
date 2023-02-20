@@ -1,6 +1,6 @@
-from pdfManipulation import write_text_to_pdf, extractFromInput
-from Utilities import verifyValueLength, makeSingkeValuePerKey, convertLatinToUTF8
+from Utilities import verifyValueLength, makeSingkeValuePerKey
 from openAi import openAiCallSummary
+from pdfManipulation import write_text_to_pdf, extractFromInput
 
 
 def SummarizeTexts(text):

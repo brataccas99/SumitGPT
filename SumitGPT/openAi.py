@@ -5,7 +5,7 @@ from SumitGPT.Utilities import count_calls
 @count_calls
 def openAiCallSummary(value):
     # Set your API key
-    openai.api_key = "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"
+    openai.api_key = "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"
     # Use the GPT-3 API to generate a summary
     model_engine = "text-davinci-003"
 
