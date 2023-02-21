@@ -56,7 +56,7 @@ def writeHeader(c, header, current_y):
     c.setFont("Times-Roman", 18)
     c.drawString(50, current_y, header)
     current_y -= 50
-    return current_y
+    return current_y, 50
 
 
 def prepareText(c, text):
@@ -88,7 +88,7 @@ def write_char_to_canvas(c, char, page_width, line_height, current_x, current_y,
 
 
 def write_sub_to_canvas(c, sub, page_width, line_height, current_x, current_y, page_num):
-    if len(sub) != 1:
+    if isinstance(sub, list):
         for char in sub:
             current_x, current_y, page_num = write_char_to_canvas(c, char, page_width, line_height, current_x,
                                                                   current_y, page_num)
@@ -96,7 +96,7 @@ def write_sub_to_canvas(c, sub, page_width, line_height, current_x, current_y, p
     else:
         current_x, current_y, page_num = write_char_to_canvas(c, sub, page_width, line_height, current_x, current_y,
                                                               page_num)
-        current_y -= 80
+
     return current_x, current_y, page_num
 
 
@@ -105,13 +105,14 @@ def write_text_to_canvas(c, diz, page_width, line_height):
     page_num = 1
     current_y = 700
     for header, text in diz.items():
-        current_y = writeHeader(c, header, current_y)
+        current_y, current_x = writeHeader(c, header, current_y)
         text = prepareText(c, text)
         if not text:
             continue
         for sub in text:
             current_x, current_y, page_num = write_sub_to_canvas(c, sub, page_width, line_height, current_x, current_y,
                                                                  page_num)
+        current_y -= 80
     c.save()
 
 

@@ -9,7 +9,7 @@ def openAiCallSummary(value):
     # Use the GPT-3 API to generate a summary
     model_engine = "text-davinci-003"
 
-    prompt = f"riassumi il seguente testo in meno di {len(value[0])} parole in utf-8, il testo è il seguente: \n {value[0]}"
+    prompt = f"riassumi il seguente testo in meno di {len(value)} parole in utf-8, il testo è il seguente: \n {value}"
     completions = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=len(value[0]), n=1, stop=None,
                                            temperature=0.5)
     return completions.choices[0].text
