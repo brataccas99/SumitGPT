@@ -1,21 +1,6 @@
-from Utilities import verifyValueLength, makeSingkeValuePerKey
+from Utilities import verifyValueLength, makeSingkeValuePerKey, removeUselessKeys, stringedDiz, removeSpaces
 from openAi import openAiCallSummary
 from pdfManipulation import write_text_to_pdf, extractFromInput
-
-
-def removeUselessKeys(diz, keys_to_remove):
-    for key in tuple(keys_to_remove):
-        del diz[key]
-    return diz
-
-
-def stringedDiz(diz):
-    for key, value in diz.items():
-        if isinstance(value, list):
-            diz[key] = " ".join(value)
-        else:
-            diz[key] = value
-    return diz
 
 
 # questa func elimina le chiavi con value vuoti senza perdere informazioni
@@ -32,10 +17,7 @@ def reformatDiz(d):
                 d[prev_key] = prev_value.replace("[", "").replace("]", "").replace("'", "")
                 keys_to_remove.append(key)
         prev_key, prev_value = key, value
-
-    d = removeUselessKeys(d, keys_to_remove)
-
-    d = stringedDiz(d)
+    d = removeSpaces(stringedDiz(removeUselessKeys(d, keys_to_remove)))
     return d
 
 
@@ -44,7 +26,7 @@ def SummarizeTexts(text):
     for section, value in text.items():
         if not value or not section:
             continue
-        #text[section] = openAiCallSummary(value)
+        # text[section] = openAiCallSummary(value)
     return text
 
 

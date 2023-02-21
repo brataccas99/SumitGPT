@@ -76,3 +76,29 @@ def reduceString(text):
     if substrings:  # Check if substrings is not empty before removing last item
         substrings.pop()  # Remove the last space character
     return substrings
+
+
+def remove_extra_spaces(string):
+    words = string.split()
+    return ' '.join(words)
+
+
+def removeSpaces(dicti):
+    for key, value in dicti.items():
+        dicti[key] = remove_extra_spaces(value)
+    return dicti
+
+
+def removeUselessKeys(diz, keys_to_remove):
+    for key in tuple(keys_to_remove):
+        del diz[key]
+    return diz
+
+
+def stringedDiz(diz):
+    for key, value in diz.items():
+        if isinstance(value, list):
+            diz[key] = " ".join(value)
+        else:
+            diz[key] = value
+    return diz
