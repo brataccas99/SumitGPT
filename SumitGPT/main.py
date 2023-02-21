@@ -1,4 +1,4 @@
-from Utilities import verifyValueLength, makeSingkeValuePerKey, removeUselessKeys, stringedDiz, removeSpaces
+from Utilities import verifyValueLength, makeSingleValuePerKey, removeUselessKeys, stringedDiz, removeSpaces
 from openAi import openAiCallSummary
 from pdfManipulation import write_text_to_pdf, extractFromInput
 
@@ -23,15 +23,19 @@ def reformatDiz(d):
 
 def SummarizeTexts(text):
     text = reformatDiz(text)
+    count = 0
     for section, value in text.items():
         if not value or not section:
             continue
         # text[section] = openAiCallSummary(value)
+        count += 1
+        if count == 4:
+            break
     return text
 
 
 def summaryGPT(filepath):
-    write_text_to_pdf(SummarizeTexts(verifyValueLength(makeSingkeValuePerKey(extractFromInput(filepath)))))
+    write_text_to_pdf(SummarizeTexts(verifyValueLength(makeSingleValuePerKey(extractFromInput(filepath)))))
 
 
 def main():

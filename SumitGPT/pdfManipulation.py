@@ -12,12 +12,15 @@ def CheckNewParagraphStartingWithNumber(header):
 
 
 def getSections(text):
-    lines = text.split('\n')
+    # problema: dividere meglio i sotto-titoli, se hai una stringa del tipo "paure delle potenze mondiali. la guerra come occasione"
+    # in questo caso "la guerra come occasione" deve essere trattato come header, quindi estratto dalla stringa
+    lines = Utilities.removeTrashList(text.split('\n'))
     result = {}
     current_header = None
     current_section = []
     for line in lines:
-        if CheckNewParagraphStartingWithNumber(line) or (len(line) < 40 and not line.endswith('.')):
+        # da rivedere questa condizione per smistare meglio header e value, inoltre refactorarlo in altre piccole funzioni
+        if CheckNewParagraphStartingWithNumber(line) or (40 > len(line) > 15 and not line.endswith('.')):
             if current_header is not None:
                 result[current_header] = current_section
                 current_section = []
@@ -104,6 +107,7 @@ def write_text_to_canvas(c, diz, page_width, line_height):
     current_x = 50
     page_num = 1
     current_y = 700
+    count = 0
     for header, text in diz.items():
         current_y, current_x = writeHeader(c, header, current_y)
         text = prepareText(c, text)
@@ -113,6 +117,9 @@ def write_text_to_canvas(c, diz, page_width, line_height):
             current_x, current_y, page_num = write_sub_to_canvas(c, sub, page_width, line_height, current_x, current_y,
                                                                  page_num)
         current_y -= 80
+        count += 1
+        if count == 4:
+            break
     c.save()
 
 

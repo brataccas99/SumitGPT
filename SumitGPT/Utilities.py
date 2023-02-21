@@ -17,6 +17,11 @@ def count_calls(func):
     return wrapper
 
 
+def removeTrashList(list):
+    while ' ' in list:
+        list.remove(' ')
+    return list
+
 def singleLetterConversion(letter):
     if unicodedata.category(letter) == "Cc":
         # Get the Unicode code point of the letter
@@ -30,13 +35,10 @@ def singleLetterConversion(letter):
 
 def multipleLetterConversion(letter):
     for char in letter:
-        # Check if the character is composed or not
-        if unicodedata.combining(char) == 0:
-            # Normalize the letter using NFKD decomposition
-            normalized = unicodedata.normalize('NFKD', letter)
-            # Replace combining diacritical mark with empty string
-            return normalized.replace('\u0302', '')
-    return letter
+        # Normalize the letter using NFKD decomposition
+        normalized = unicodedata.normalize('NFKD', char)
+        # Replace combining diacritical mark with empty string
+        return normalized.replace('\u0302', '')
 
 
 def convertLatinToUTF8(letter):
@@ -47,7 +49,7 @@ def convertLatinToUTF8(letter):
         return multipleLetterConversion(letter)
 
 
-def makeSingkeValuePerKey(diz):
+def makeSingleValuePerKey(diz):
     return {k: " ".join(v) for k, v in diz.items()}
 
 
