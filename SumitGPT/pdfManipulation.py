@@ -16,7 +16,7 @@ def reduceString(text):
 
 def write_text_to_pdf(diz):
     c = canvas.Canvas('output.pdf', pagesize=(210 * mm, 297 * mm))
-    page_width = c.pagesize[0] - 100
+    page_width = c._pagesize[0] - 100
     line_height = 20
     current_x = 50
     page_num = 0
@@ -78,7 +78,7 @@ def getSections(text):
 
 def extractFromInput(filename):
     page_text = ''
-    filepath = "C:/Users/roach/PycharmProject/SumitGPT/SumitGPT/input.pdf"
+    filepath = "/home/dario/Scrivania/git/SumitGPT/SumitGPT/input.pdf"
     with open(filepath, "rb") as file:
         pdf_reader = PyPDF2.PdfReader(file)
         for page in range(len(pdf_reader.pages)):

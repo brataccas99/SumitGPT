@@ -1,9 +1,18 @@
 import openai
 
+def get_api_key(file_path:str):
+    """
+    This funtion gets the api key for open ai from a file in the memory
+    @param file_path the file path where the key is stored
+    @return key the string containig the key
+    """
+    file = open(file_path, 'r')
+    Lines = file.readlines()
+    return Lines[0].replace("\n", "")
 
 def openAiCallSummary(text):
     # Set your API key
-    openai.api_key = "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"
+    openai.api_key = get_api_key("/home/dario/api_key_GPT.txt")
     # Use the GPT-3 API to generate a summary
     model_engine = "text-davinci-003"
 
