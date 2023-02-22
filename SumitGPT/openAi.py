@@ -2,10 +2,15 @@ import openai
 from SumitGPT.Utilities import count_calls
 
 
-def getApiKey():
-    with open('C:/Users/roach/Desktop/openAI_api_key.txt', 'r') as f:
-        contents = f.read()
-    return contents
+def get_api_key(file_path:str):
+    """
+    This funtion gets the api key for open ai from a file in the memory
+    @param file_path the file path where the key is stored
+    @return key the string containig the key
+    """
+    file = open(file_path, 'r')
+    Lines = file.readlines()
+    return Lines[0].replace("\n", "")
 
 
 @count_calls
