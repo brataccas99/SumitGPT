@@ -14,13 +14,20 @@ def get_api_key(file_path: str):
 
 
 @count_calls
-def openAiCallSummary(value):
+def openAiCallSummary(text: str,
+                      prompt: str = "riassumi il seguente testo in meno caratteri della sua dimensione originale con solo caratteri utf-8. il testo è il seguente:\n"):
+    """
+    This function makes the call to openAI to execute a custom prompt with the specified text
+
+    @param prompt the prompt used for the call at openAI
+    @param text the text to use for the query
+    """
     # Set your API key
     openai.api_key = get_api_key("C:/Users/roach/Desktop/openAI_api_key.txt")
     # Use the GPT-3 API to generate a summary
     model_engine = "text-davinci-003"
 
-    prompt = f"riassumi il seguente testo in meno di {len(value)} parole in utf-8, il testo è il seguente: \n {value}"
-    completions = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=len(value[0]), n=1, stop=None,
+    prompt_to_send = f"{prompt} \n {text}"
+    completions = openai.Completion.create(engine=model_engine, prompt=prompt_to_send, max_tokens=len(text), n=1, stop=None,
                                            temperature=0.5)
     return completions.choices[0].text

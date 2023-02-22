@@ -55,6 +55,11 @@ def makeSingleValuePerKey(diz):
 
 
 def verifyValueLength(dictionary):
+    """
+       This function
+       @param dictionary
+       @return result
+       """
     result = {}
     for k, v in dictionary.items():
         result[k] = [v[i:i + 4000] for i in range(0, len(v), 4000)]
@@ -71,6 +76,11 @@ def detectEncoding(s):
 
 
 def reduceString(text):
+    """
+       This function
+       @param
+       @return
+       """
     substrings = []
     for word in text:
         word_substrings = [word[i:i + 85] for i in range(0, len(word), 85)]

@@ -124,6 +124,13 @@ def write_text_to_canvas(c, diz, page_width, line_height):
 
 
 def write_text_to_pdf(diz):
+    """
+       This function writes the dictionary passed to a pdf taking the key as header of the chapter and
+       value as the text of the chapter putting it in an output pdf
+       @param diz the dictionary with the text
+       @param outpath the output file path of the pdf
+
+       """
     c, page_width, line_height, current_x, page_num, current_y = initializeA4Format()
     write_text_to_canvas(c, diz, page_width, line_height)
 
