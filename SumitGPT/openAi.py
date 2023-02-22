@@ -2,7 +2,7 @@ import openai
 from SumitGPT.Utilities import count_calls
 
 
-def get_api_key(file_path:str):
+def get_api_key(file_path: str):
     """
     This funtion gets the api key for open ai from a file in the memory
     @param file_path the file path where the key is stored
@@ -16,7 +16,7 @@ def get_api_key(file_path:str):
 @count_calls
 def openAiCallSummary(value):
     # Set your API key
-    openai.api_key = getApiKey()
+    openai.api_key = get_api_key("C:/Users/roach/Desktop/openAI_api_key.txt")
     # Use the GPT-3 API to generate a summary
     model_engine = "text-davinci-003"
 

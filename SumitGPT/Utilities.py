@@ -22,6 +22,7 @@ def removeTrashList(list):
         list.remove(' ')
     return list
 
+
 def singleLetterConversion(letter):
     if unicodedata.category(letter) == "Cc":
         # Get the Unicode code point of the letter
