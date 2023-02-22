@@ -1,51 +1,7 @@
 import PyPDF2
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
-
-
-def reduceString(text):
-    substrings = []
-    for word in text:
-        word_substrings = [word[i:i + 85] for i in range(0, len(word), 85)]
-        substrings.extend(word_substrings)
-        substrings.append(' ')
-    if substrings:  # Check if substrings is not empty before removing last item
-        substrings.pop()  # Remove the last space character
-    return substrings
-
-
-def write_text_to_pdf(diz):
-    c = canvas.Canvas('output.pdf', pagesize=(210 * mm, 297 * mm))
-    page_width = c._pagesize[0] - 100
-    line_height = 20
-    current_x = 50
-    page_num = 0
-    c.setFont("Helvetica", 18)
-    for header, text in diz.items():
-        c.drawString(50, 780, header)
-        current_y = 700
-        c.setFont("Helvetica", 14)
-        if text.__contains__('\n\n'):
-            text = text.replace('\n\n', '')
-        if text.__contains__('Codificato in formato UTF-8:'):
-            text = text.replace('Codificato in formato UTF-8:', '')
-        for word in text:
-            substrings = reduceString(word)
-            for sub in substrings:
-                for char in sub:
-                    char_width = c.stringWidth(char)
-                    if current_x + char_width >= page_width:
-                        current_x = 50
-                        current_y -= line_height
-                    c.drawString(current_x, current_y, char)
-                    current_x += char_width
-        if text == '':
-            continue
-        c.showPage()
-        current_x = 50
-        page_num += 1
-    c.save()
-    print('finito')
+import Utilities
 
 
 def CheckNewParagraphStartingWithNumber(header):
@@ -56,12 +12,15 @@ def CheckNewParagraphStartingWithNumber(header):
 
 
 def getSections(text):
-    lines = text.split('\n')
+    # problema: dividere meglio i sotto-titoli, se hai una stringa del tipo "paure delle potenze mondiali. la guerra come occasione"
+    # in questo caso "la guerra come occasione" deve essere trattato come header, quindi estratto dalla stringa
+    lines = Utilities.removeTrashList(text.split('\n'))
     result = {}
     current_header = None
     current_section = []
     for line in lines:
-        if CheckNewParagraphStartingWithNumber(line) or (len(line) < 40 and not line.endswith('.')):
+        # da rivedere questa condizione per smistare meglio header e value, inoltre refactorarlo in altre piccole funzioni
+        if CheckNewParagraphStartingWithNumber(line) or (40 > len(line) > 15 and not line.endswith('.')):
             if current_header is not None:
                 result[current_header] = current_section
                 current_section = []
@@ -78,7 +37,7 @@ def getSections(text):
 
 def extractFromInput(filename):
     page_text = ''
-    filepath = "/home/dario/Scrivania/git/SumitGPT/SumitGPT/input.pdf"
+    filepath = filename
     with open(filepath, "rb") as file:
         pdf_reader = PyPDF2.PdfReader(file)
         for page in range(len(pdf_reader.pages)):
@@ -86,12 +45,86 @@ def extractFromInput(filename):
     return getSections(page_text)
 
 
-def makeSingkeValuePerKey(diz):
-    return {k: " ".join(v) for k, v in diz.items()}
+def initializeA4Format():
+    c = canvas.Canvas('output.pdf', pagesize=(210 * mm, 297 * mm))
+    page_width = c.pagesize[0] - 100
+    line_height = 20
+    current_x = 50
+    page_num = 0
+    current_y = 780
+    return c, page_width, line_height, current_x, page_num, current_y
 
 
-def verifyValueLength(dictionary):
-    result = {}
-    for k, v in dictionary.items():
-        result[k] = [v[i:i + 4097] for i in range(0, len(v), 4097)]
-    return result
+def writeHeader(c, header, current_y):
+    c.setFont("Times-Roman", 18)
+    c.drawString(50, current_y, header)
+    current_y -= 50
+    return current_y, 50
+
+
+def prepareText(c, text):
+    c.setFont("Times-Roman", 14)
+    if text.__contains__('\n\n'):
+        text = text.replace('\n\n', '')
+    if text.__contains__('Codificato in formato UTF-8:'):
+        text = text.replace('Codificato in formato UTF-8:', '')
+    if len(text) > 4000:
+        text = Utilities.reduceString(text)
+    return text
+
+
+def write_char_to_canvas(c, char, page_width, line_height, current_x, current_y, page_num):
+    if char != '\n' and Utilities.detectEncoding(char):
+        char = Utilities.convertLatinToUTF8(char)
+    char_width = c.stringWidth(char)
+    c.drawString(current_x, current_y, char)
+    current_x += char_width
+    if current_x + char_width >= page_width:
+        current_x = 50
+        current_y -= line_height
+    if current_y <= 50:
+        c.showPage()
+        page_num += 1
+        current_x = 50
+        current_y = 700
+    return current_x, current_y, page_num
+
+
+def write_sub_to_canvas(c, sub, page_width, line_height, current_x, current_y, page_num):
+    if isinstance(sub, list):
+        for char in sub:
+            current_x, current_y, page_num = write_char_to_canvas(c, char, page_width, line_height, current_x,
+                                                                  current_y, page_num)
+        current_y -= 80
+    else:
+        current_x, current_y, page_num = write_char_to_canvas(c, sub, page_width, line_height, current_x, current_y,
+                                                              page_num)
+
+    return current_x, current_y, page_num
+
+
+def write_text_to_canvas(c, diz, page_width, line_height):
+    current_x = 50
+    page_num = 1
+    current_y = 700
+    count = 0
+    for header, text in diz.items():
+        current_y, current_x = writeHeader(c, header, current_y)
+        text = prepareText(c, text)
+        if not text:
+            continue
+        for sub in text:
+            current_x, current_y, page_num = write_sub_to_canvas(c, sub, page_width, line_height, current_x, current_y,
+                                                                 page_num)
+        current_y -= 80
+        count += 1
+        if count == 4:
+            break
+    c.save()
+
+
+def write_text_to_pdf(diz):
+    c, page_width, line_height, current_x, page_num, current_y = initializeA4Format()
+    write_text_to_canvas(c, diz, page_width, line_height)
+
+    print('finito')
