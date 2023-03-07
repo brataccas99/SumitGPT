@@ -32,13 +32,12 @@ def openAiCallSummary(text: str, prompt: str):
     prompt_to_send = f"{prompt} {text}"
 
     try:
-        print('hellp')
-        # completions = openai.Completion.create(engine=model_engine, prompt=prompt_to_send,
-        #                                        max_tokens=(4095 - len(text)),
-        #                                        n=1,
-        #                                        stop=None,
-        #                                        temperature=0.5)
-        # return completions.choices[0].text
+        completions = openai.Completion.create(engine=model_engine, prompt=prompt_to_send,
+                                               max_tokens=(4095 - len(text)),
+                                               n=1,
+                                               stop=None,
+                                               temperature=0.5)
+        return completions.choices[0].text
     except Exception:
         time.sleep(180)
         return openAiCallSummary(text, prompt)
