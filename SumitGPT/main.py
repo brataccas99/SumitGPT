@@ -1,3 +1,4 @@
+from SumitGPT.openAi import openAIService
 from Utilities import verifyValueLength, makeSingleValuePerKey, removeUselessKeys, stringedDiz, removeSpaces
 from pdfManipulation import write_text_to_pdf, extractFromInput
 
@@ -21,15 +22,12 @@ def reformatDiz(d: dict):
 
 
 def SummarizeTexts(text: dict):
-    text = reformatDiz(text)
+    text = verifyValueLength(reformatDiz(text))
     count = 0
     for section, value in text.items():
         if not value or not section:
             continue
-        # text[section] = openAiCallSummary(value)
-        count += 1
-        if count == 4:
-            break
+        text[section] = openAIService(value)
     return text
 
 

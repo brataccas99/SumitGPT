@@ -191,8 +191,6 @@ def write_text_to_canvas(c: canvas, diz: dict, page_width: int, line_height: int
                                                                  page_num)
         current_y -= 80
         count += 1
-        if count == 4:
-            break
     c.save()
 
 
