@@ -52,9 +52,8 @@ def splitString(test, prompt):
 
 def checkLength(text, prompt):
     max_tokens = 4087
-    test = 'a' * 4089
-    if (max_tokens - len(test)) <= 0:
-        result = splitString(test, prompt)
+    if (max_tokens - len(text)) <= 0:
+        result = splitString(text, prompt)
         return [openAiCallSummary(s, prompt) for s in result]
     else:
         return openAiCallSummary(text, prompt)
