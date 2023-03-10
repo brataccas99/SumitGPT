@@ -23,11 +23,14 @@ def reformatDiz(d: dict):
 
 def SummarizeTexts(text: dict):
     text = verifyValueLength(reformatDiz(text))
-    count = 0
+    progress = 0
     for section, value in text.items():
         if not value or not section:
             continue
         text[section] = openAIService(value)
+        if progress < len(text):
+            progress += 1
+            print("Progress: ", progress, "/", len(text), " texts summarized")
     return text
 
 

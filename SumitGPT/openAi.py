@@ -34,8 +34,6 @@ def openAiCallSummary(text: str, prompt: str):
     prompt_to_send = f"{prompt} {text}"
     encoding.encode(prompt_to_send)
     tokens = 4000 - len(encoding.encode(prompt_to_send)) - int((len(encoding.encode(prompt_to_send)) * 0.3))
-    print(tokens)
-    print("lunghezza testo: ", len(text), "\n lunghezza tokens: ", len(encoding.encode(prompt_to_send)), "\n testo: ", text)
     try:
         completions = openai.Completion.create(engine=model_engine, prompt=prompt_to_send,
                                                max_tokens=tokens,
