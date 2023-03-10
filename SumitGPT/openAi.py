@@ -1,6 +1,8 @@
 import time
 
 import openai
+import tiktoken
+
 from SumitGPT.Utilities import count_calls
 
 
@@ -23,27 +25,28 @@ def openAiCallSummary(text: str, prompt: str):
     @param prompt the prompt used for the call at openAI
     @param text the text to use for the query
     """
-    print(len(text), " ", text)
     # Set your API key
     openai.api_key = get_api_key("C:/Users/roach/Desktop/openAI_api_key.txt")
     # Use the GPT-3 API to generate a summary
     model_engine = "text-davinci-003"
-
+    encoding = tiktoken.model.get_encoding("cl100k_base"), tiktoken.model.encoding_for_model("gpt-3.5-turbo")
     prompt_to_send = f"{prompt} {text}"
-
+    tokens = 4087 - len(encoding.encode(text))
+    print("lunghezza testo: ", len(text), "\n lunghezza tokens: ", len(encoding.encode(text)), "\n testo: ", text)
     try:
         completions = openai.Completion.create(engine=model_engine, prompt=prompt_to_send,
-                                               max_tokens=(4095 - len(text)),
+                                               max_tokens=tokens,
                                                n=1,
                                                stop=None,
                                                temperature=0.5)
         return completions.choices[0].text
-    except Exception:
+    except Exception as e:
+        print('Error: ', e)
         time.sleep(180)
         return openAiCallSummary(text, prompt)
 
 
-def splitString(test, prompt):
+def splitString(test):
     # dimezza la stringa test se è più lunga di 4097 caratteri
     mid = len(test) // 2
     strings = [test[:mid], test[mid:]]
@@ -52,8 +55,11 @@ def splitString(test, prompt):
 
 def checkLength(text, prompt):
     max_tokens = 4087
-    if (max_tokens - len(text)) <= 0:
-        result = splitString(text, prompt)
+    encoding = tiktoken.get_encoding("cl100k_base")
+    encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+    encoding.encode(text)
+    if (max_tokens - len(encoding.encode(text))) <= 0:
+        result = splitString(text)
         return [openAiCallSummary(s, prompt) for s in result]
     else:
         return openAiCallSummary(text, prompt)
