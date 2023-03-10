@@ -12,9 +12,9 @@ def count_calls(func):
            """
     def wrapper(*args, **kwargs):
         wrapper.num_calls += 1
-        print(f"{wrapper.num_calls}a chiamata ad openAI")
         if wrapper.num_calls == 58:  # actually the limit is 60/min requests
             time.sleep(70)
+            print("\naspetto 1 minuto\n")
             wrapper.num_calls = 0
         return func(*args, **kwargs)
 
