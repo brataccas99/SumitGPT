@@ -1,10 +1,10 @@
+from SumitGPT.openAi import openAIService
 from Utilities import verifyValueLength, makeSingleValuePerKey, removeUselessKeys, stringedDiz, removeSpaces
-from openAi import openAiCallSummary
 from pdfManipulation import write_text_to_pdf, extractFromInput
 
 
 # questa func elimina le chiavi con value vuoti senza perdere informazioni
-def reformatDiz(d):
+def reformatDiz(d: dict):
     prev_key, prev_value = next(iter(d.items()))  # Get the first key in the dictionary
     keys_to_remove = []
     for key, value in d.items():
@@ -21,20 +21,17 @@ def reformatDiz(d):
     return d
 
 
-def SummarizeTexts(text):
-    text = reformatDiz(text)
+def SummarizeTexts(text: dict):
+    text = verifyValueLength(reformatDiz(text))
     count = 0
     for section, value in text.items():
         if not value or not section:
             continue
-        # text[section] = openAiCallSummary(value)
-        count += 1
-        if count == 4:
-            break
+        text[section] = openAIService(value)
     return text
 
 
-def summaryGPT(filepath):
+def summaryGPT(filepath: str):
     write_text_to_pdf(SummarizeTexts(verifyValueLength(makeSingleValuePerKey(extractFromInput(filepath)))))
 
 
