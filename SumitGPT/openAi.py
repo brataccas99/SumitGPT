@@ -28,9 +28,9 @@ def openAiCallSummary(text: str, prompt: str):
     # Set your API key
     openai.api_key = get_api_key("C:/Users/roach/Desktop/openAI_api_key.txt")
     # Use the GPT-3 API to generate a summary
-    model_engine = "text-davinci-003"
+    model_engine = "text-davinci-002"
     encoding = tiktoken.get_encoding("cl100k_base")
-    encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+    encoding = tiktoken.encoding_for_model("text-davinci-002")
     prompt_to_send = f"{prompt} {text}"
     encoding.encode(prompt_to_send)
     tokens = 4000 - len(encoding.encode(prompt_to_send)) - int((len(encoding.encode(prompt_to_send)) * 0.3))
@@ -57,7 +57,7 @@ def splitString(test):
 def checkLength(text, prompt):
     max_tokens = 4000
     encoding = tiktoken.get_encoding("cl100k_base")
-    encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+    encoding = tiktoken.encoding_for_model("text-davinci-002")
     encoding.encode(text)
     if (max_tokens - len(encoding.encode(text + prompt))) <= 0:
         result = splitString(text)
@@ -67,7 +67,7 @@ def checkLength(text, prompt):
 
 
 def openAIService(text: list,
-                  prompt: str = "riassumi il seguente testo usando meno caratteri della sua dimensione originale, con solo caratteri utf-8. il testo è il seguente:\n"):
+                  prompt: str = "riassumi il seguente testo usando meno caratteri della sua dimensione originale usando codifica utf-8:\n"):
     listBack = []
     result = ""
     if len(text) > 1:

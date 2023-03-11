@@ -39,7 +39,8 @@ def summaryGPT(filepath: str):
 
 
 def main():
-    summaryGPT("C:/Users/roach/Desktop/Storia_contemporanea.pdf")
+    # summaryGPT("C:/Users/roach/Desktop/Storia_contemporanea.pdf")
+    summaryGPT("C:/Users/roach/Desktop/input.pdf")
 
 
 if __name__ == '__main__':
